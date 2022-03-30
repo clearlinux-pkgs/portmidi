@@ -4,7 +4,7 @@
 #
 Name     : portmidi
 Version  : 2.0.3
-Release  : 1
+Release  : 2
 URL      : https://github.com/PortMidi/portmidi/archive/refs/tags/v2.0.3.tar.gz
 Source0  : https://github.com/PortMidi/portmidi/archive/refs/tags/v2.0.3.tar.gz
 Summary  : @CMAKE_PROJECT_DESCRIPTION@
@@ -14,8 +14,8 @@ Requires: portmidi-lib = %{version}-%{release}
 Requires: portmidi-license = %{version}-%{release}
 BuildRequires : alsa-lib-dev
 BuildRequires : buildreq-cmake
+BuildRequires : buildreq-gnome
 BuildRequires : glibc-dev
-BuildRequires : openjdk11
 
 %description
 Roger B. Dannenberg
@@ -59,29 +59,30 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1648660073
+export SOURCE_DATE_EPOCH=1648663779
 mkdir -p clr-build
 pushd clr-build
 export GCC_IGNORE_WERROR=1
-export AR=gcc-ar
-export RANLIB=gcc-ranlib
-export NM=gcc-nm
-export CFLAGS="$CFLAGS -O3 -ffat-lto-objects -flto=auto "
-export FCFLAGS="$FFLAGS -O3 -ffat-lto-objects -flto=auto "
-export FFLAGS="$FFLAGS -O3 -ffat-lto-objects -flto=auto "
-export CXXFLAGS="$CXXFLAGS -O3 -ffat-lto-objects -flto=auto "
+export CFLAGS="$CFLAGS -fno-lto "
+export FCFLAGS="$FFLAGS -fno-lto "
+export FFLAGS="$FFLAGS -fno-lto "
+export CXXFLAGS="$CXXFLAGS -fno-lto "
 %cmake ..
 make  %{?_smp_mflags}
 popd
 
 %install
-export SOURCE_DATE_EPOCH=1648660073
+export SOURCE_DATE_EPOCH=1648663779
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/portmidi
 cp %{_builddir}/portmidi-2.0.3/license.txt %{buildroot}/usr/share/package-licenses/portmidi/50a53a89a8310af162c249cebfae96e4c42d5dcd
+cp %{_builddir}/portmidi-2.0.3/pm_java/pmdefaults/pmdefaults-license.txt %{buildroot}/usr/share/package-licenses/portmidi/c201b1c59f24fb7c5ede7ffb2fd87ab6337ec573
 pushd clr-build
 %make_install
 popd
+## install_append content
+ln -s libportmidi.so %{buildroot}/usr/lib64/libporttime.so
+## install_append end
 
 %files
 %defattr(-,root,root,-)
@@ -96,6 +97,7 @@ popd
 /usr/lib64/cmake/PortMidi/PortMidiTargets-relwithdebinfo.cmake
 /usr/lib64/cmake/PortMidi/PortMidiTargets.cmake
 /usr/lib64/libportmidi.so
+/usr/lib64/libporttime.so
 /usr/lib64/pkgconfig/portmidi.pc
 
 %files lib
@@ -106,3 +108,4 @@ popd
 %files license
 %defattr(0644,root,root,0755)
 /usr/share/package-licenses/portmidi/50a53a89a8310af162c249cebfae96e4c42d5dcd
+/usr/share/package-licenses/portmidi/c201b1c59f24fb7c5ede7ffb2fd87ab6337ec573
